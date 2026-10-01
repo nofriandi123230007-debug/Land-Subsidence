@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        WebGIS Land Subsidence - Desa Sidodadi
+    </title>
+
+
+    <!-- =====================================================
+         LEAFLET CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+
+    <!-- =====================================================
+         STYLE
+    ====================================================== -->
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+
+            margin: 0;
+            padding: 0;
+
+            width: 100%;
+            height: 100%;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f7f8;
+
+        }
+
+
+        /* =====================================================
+           HEADER
+        ====================================================== */
+
+        .header {
+
+            height: 72px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #123c4a,
+                    #176b7c
+                );
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 25px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.20);
+
+        }
+
+
+        .header-title {
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+        }
+
+
+        .header-subtitle {
+
+            margin-top: 4px;
+
+            font-size: 11px;
+
+            color: #d9eef2;
+
+        }
+
+
+        .header-group {
+
+            text-align: right;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        .header-location {
+
+            margin-top: 4px;
+
+            font-size: 10px;
+
+            color: #d9eef2;
+
+        }
+
+
+        /* =====================================================
+           LAYOUT
+        ====================================================== */
+
+        .container {
+
+            width: 100%;
+
+            height:
+                calc(100vh - 72px);
+
+            display: flex;
+
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ====================================================== */
+
+        .sidebar {
+
+            width: 310px;
+
+            height: 100%;
+
+            overflow-y: auto;
+
+            background: white;
+
+            padding: 15px;
+
+            box-shadow:
+                2px 0 10px
+                rgba(0,0,0,0.10);
+
+            z-index: 1000;
+
+        }
+
+
+        /* =====================================================
+           LOCATION CARD
+        ====================================================== */
+
+        .location-card {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #123c4a,
+                    #2196a6
+                );
+
+            color: white;
+
+            border-radius: 13px;
+
+            padding: 17px;
+
+            margin-bottom: 13px;
+
+        }
+
+
+        .location-label {
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+
+            color: #d8eef2;
+
+        }
+
+
+        .location-name {
+
+            margin-top: 5px;
+
+            font-size: 23px;
+
+            font-weight: bold;
+
+        }
+
+
+        .location-description {
+
+            margin-top: 8px;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+
+            color: #e4f4f6;
+
+        }
+
+
+        /* =====================================================
+           CARD
+        ====================================================== */
+
+        .card {
+
+            background: white;
+
+            border:
+                1px solid #e1e7e9;
+
+            border-radius: 11px;
+
+            padding: 13px;
+
+            margin-bottom: 13px;
+
+        }
+
+
+        .card-title {
+
+            margin-bottom: 10px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            color: #263238;
+
+        }
+
+
+        /* =====================================================
+           LEGEND
+        ====================================================== */
+
+        .legend-item {
+
+            display: flex;
+
+            align-items: center;
+
+            margin-bottom: 10px;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+
+            color: #546e7a;
+
+        }
+
+
+        .legend-dot {
+
+            width: 18px;
+
+            height: 18px;
+
+            min-width: 18px;
+
+            margin-right: 9px;
+
+            border-radius: 50%;
+
+            border:
+                2px solid white;
+
+            box-shadow:
+                0 1px 5px
+                rgba(0,0,0,0.35);
+
+        }
+
+
+        .dot-red {
+
+            background: #e31a1c;
+
+        }
+
+
+        .dot-yellow {
+
+            background: #ffd400;
+
+        }
+
+
+        /* =====================================================
+           CARA MEMBACA
+        ====================================================== */
+
+        .explanation {
+
+            background: #f6fafb;
+
+            border:
+                1px solid #dcebed;
+
+            border-radius: 8px;
+
+            padding: 10px;
+
+            font-size: 10px;
+
+            line-height: 1.65;
+
+            color: #607d8b;
+
+        }
+
+
+        .explanation strong {
+
+            color: #263238;
+
+        }
+
+
+        /* =====================================================
+           ANGGOTA
+        ====================================================== */
+
+        .member {
+
+            background: #f5f8f9;
+
+            border-left:
+                4px solid #2196a6;
+
+            padding: 8px;
+
+            margin-bottom: 6px;
+
+            border-radius: 5px;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            color: #455a64;
+
+        }
+
+
+        /* =====================================================
+           MAP
+        ====================================================== */
+
+        #map {
+
+            flex: 1;
+
+            height: 100%;
+
+            position: relative;
+
+        }
+
+
+        /* =====================================================
+           JUDUL PETA
+        ====================================================== */
+
+        .map-title {
+
+            position: absolute;
+
+            top: 15px;
+
+            left: 15px;
+
+            z-index: 500;
+
+            background:
+                rgba(255,255,255,0.95);
+
+            padding:
+                10px 14px;
+
+            border-radius: 9px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.18);
+
+        }
+
+
+        .map-title-main {
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            color: #263238;
+
+        }
+
+
+        .map-title-sub {
+
+            margin-top: 3px;
+
+            font-size: 9px;
+
+            color: #78909c;
+
+        }
+
+
+        /* =====================================================
+           POSISI TOMBOL ZOOM
+           Diletakkan di bawah judul peta
+        ====================================================== */
+
+        #map .leaflet-top.leaflet-left {
+
+            top: 82px;
+
+            left: 20px;
+
+        }
+
+
+        /* =====================================================
+           LABEL BM
+        ====================================================== */
+
+        .bm-label {
+
+            background: white;
+
+            border:
+                1px solid #555;
+
+            border-radius: 5px;
+
+            padding:
+                2px 6px;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            color: #263238;
+
+            box-shadow:
+                0 1px 4px
+                rgba(0,0,0,0.25);
+
+        }
+
+
+        /* =====================================================
+           POPUP
+        ====================================================== */
+
+        .popup {
+
+            min-width: 270px;
+
+            max-width: 360px;
+
+        }
+
+
+        .popup-header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #123c4a,
+                    #2196a6
+                );
+
+            color: white;
+
+            padding: 12px;
+
+            margin:
+                -13px -20px 12px -20px;
+
+            border-radius:
+                5px 5px 0 0;
+
+        }
+
+
+        .popup-title {
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+        }
+
+
+        .popup-location {
+
+            margin-top: 4px;
+
+            font-size: 9px;
+
+            color: #d8eef2;
+
+        }
+
+
+        .section-title {
+
+            margin-top: 10px;
+
+            margin-bottom: 6px;
+
+            padding-bottom: 5px;
+
+            border-bottom:
+                1px solid #e5eeee;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            color: #17657c;
+
+        }
+
+
+        .data-row {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            gap: 15px;
+
+            padding: 5px 0;
+
+            border-bottom:
+                1px solid #f0f0f0;
+
+            font-size: 10px;
+
+        }
+
+
+        .data-label {
+
+            color: #78909c;
+
+        }
+
+
+        .data-value {
+
+            text-align: right;
+
+            font-weight: bold;
+
+            color: #263238;
+
+        }
+
+
+        /* =====================================================
+           FOTO DOKUMENTASI
+        ====================================================== */
+
+        .photo-title {
+
+            margin-top: 12px;
+
+            margin-bottom: 7px;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            color: #17657c;
+
+        }
+
+
+        .photo-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 6px;
+
+        }
+
+
+        .photo-grid img {
+
+            width: 100%;
+
+            height: 90px;
+
+            object-fit: cover;
+
+            border-radius: 6px;
+
+            border:
+                1px solid #ccd7da;
+
+            cursor: pointer;
+
+        }
+
+
+        .photo-grid img:hover {
+
+            opacity: 0.8;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ====================================================== */
+
+        .footer {
+
+            padding: 8px 0;
+
+            text-align: center;
+
+            font-size: 9px;
+
+            color: #90a4ae;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ====================================================== */
+
+        @media(max-width:750px) {
+
+            .header {
+
+                height: 65px;
+
+                padding: 0 12px;
+
+            }
+
+
+            .header-title {
+
+                font-size: 14px;
+
+            }
+
+
+            .header-subtitle {
+
+                font-size: 8px;
+
+            }
+
+
+            .header-group {
+
+                display: none;
+
+            }
+
+
+            .container {
+
+                height:
+                    calc(100vh - 65px);
+
+                flex-direction: column;
+
+            }
+
+
+            .sidebar {
+
+                width: 100%;
+
+                height: 38%;
+
+            }
+
+
+            #map {
+
+                width: 100%;
+
+                height: 62%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<div class="header">
+
+
+    <div>
+
+        <div class="header-title">
+
+            WEBGIS LAND SUBSIDENCE
+
+        </div>
+
+
+        <div class="header-subtitle">
+
+            Visualisasi Perubahan Posisi Permukaan Tanah
+
+        </div>
+
+    </div>
+
+
+    <div class="header-group">
+
+        KELOMPOK 6
+
+        <div class="header-location">
+
+            Desa Sidodadi
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<div class="sidebar">
+
+
+    <!-- LOKASI -->
+
+    <div class="location-card">
+
+        <div class="location-label">
+
+            LOKASI PENELITIAN
+
+        </div>
+
+
+        <div class="location-name">
+
+            Desa Sidodadi
+
+        </div>
+
+
+        <div class="location-description">
+
+            WebGIS menampilkan titik pengamatan
+            dan informasi perubahan posisi
+            permukaan tanah berdasarkan
+            hasil pengolahan GNSS.
+
+        </div>
+
+    </div>
+
+
+
+    <!-- LEGENDA -->
+
+    <div class="card">
+
+        <div class="card-title">
+
+            KETERANGAN WARNA TITIK
+
+        </div>
+
+
+        <div class="legend-item">
+
+            <div class="legend-dot dot-red"></div>
+
+
+            <div>
+
+                <b>Merah</b><br>
+
+                Salah satu nilai
+                <b>dE, dN, atau dU</b>
+                tidak 0.
+
+            </div>
+
+        </div>
+
+
+        <div class="legend-item">
+
+            <div class="legend-dot dot-yellow"></div>
+
+
+            <div>
+
+                <b>Kuning</b><br>
+
+                Nilai
+                <b>dE, dN, dan dU</b>
+                semuanya 0.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CARA MEMBACA -->
+
+    <div class="card">
+
+        <div class="card-title">
+
+            CARA MEMBACA DATA
+
+        </div>
+
+
+        <div class="explanation">
+
+            <strong>dE</strong><br>
+
+            Perubahan posisi arah
+            <b>Timur-Barat</b>.
+
+            <br><br>
+
+
+            <strong>dN</strong><br>
+
+            Perubahan posisi arah
+            <b>Utara-Selatan</b>.
+
+            <br><br>
+
+
+            <strong>dU</strong><br>
+
+            Perubahan posisi secara
+            <b>vertikal</b> atau tinggi.
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ANGGOTA -->
+
+    <div class="card">
+
+        <div class="card-title">
+
+            ANGGOTA KELOMPOK 6
+
+        </div>
+
+
+        <div class="member">
+            Nofriandi
+        </div>
+
+
+        <div class="member">
+            Larki Izzati Reanisiah Gunawan
+        </div>
+
+
+        <div class="member">
+            Fadhillah Syahla Daulay
+        </div>
+
+
+        <div class="member">
+            Naufal Syafiq
+        </div>
+
+
+        <div class="member">
+            Ryamizard Akbar Zulkarnain
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+
+        WEBGIS LAND SUBSIDENCE
+        <br>
+
+        DESA SIDODADI — KELOMPOK 6
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PETA
+===================================================== -->
+
+<div id="map">
+
+
+    <div class="map-title">
+
+        <div class="map-title-main">
+
+            PETA LAND SUBSIDENCE
+
+        </div>
+
+
+        <div class="map-title-sub">
+
+            Desa Sidodadi
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     LEAFLET JS
+===================================================== -->
+
+<script
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+
+<script>
+
+
+/* =====================================================
+   1. MEMBUAT PETA
+===================================================== */
+
+const map =
+    L.map("map");
+
+
+/* =====================================================
+   2. OPEN STREET MAP
+===================================================== */
+
+const osm =
+    L.tileLayer(
+
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+        {
+
+            maxZoom: 20,
+
+            attribution:
+                "&copy; OpenStreetMap contributors"
+
+        }
+
+    ).addTo(map);
+
+
+
+/* =====================================================
+   3. CITRA SATELIT
+===================================================== */
+
+const satellite =
+    L.tileLayer(
+
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+
+        {
+
+            maxZoom: 20,
+
+            attribution:
+                "Tiles &copy; Esri"
+
+        }
+
+    );
+
+
+
+/* =====================================================
+   4. PILIH BASEMAP
+===================================================== */
+
+L.control.layers(
+
+    {
+
+        "Peta Jalan":
+            osm,
+
+        "Citra Satelit":
+            satellite
+
+    }
+
+).addTo(map);
+
+
+
+/* =====================================================
+   5. MEMBACA ANGKA
+===================================================== */
+
+function bacaAngka(nilai) {
+
+
+    if (
+        nilai === null ||
+        nilai === undefined ||
+        nilai === ""
+    ) {
+
+        return 0;
+
+    }
+
+
+    let teks =
+        String(nilai)
+        .trim()
+        .replace(",", ".");
+
+
+    let hasil =
+        parseFloat(teks);
+
+
+    if (
+        isNaN(hasil)
+    ) {
+
+        return 0;
+
+    }
+
+
+    return hasil;
+
+}
+
+
+
+/* =====================================================
+   6. MENCARI FIELD
+===================================================== */
+
+function cariField(
+    properties,
+    daftarNama
+) {
+
+
+    for (
+        let i = 0;
+        i < daftarNama.length;
+        i++
+    ) {
+
+
+        const nama =
+            daftarNama[i];
+
+
+        if (
+            properties[nama] !== undefined &&
+            properties[nama] !== null &&
+            properties[nama] !== ""
+        ) {
+
+            return properties[nama];
+
+        }
+
+    }
+
+
+    return 0;
+
+}
+
+
+
+/* =====================================================
+   7. MEMBACA dE
+===================================================== */
+
+function ambilDE(properties) {
+
+    return bacaAngka(
+
+        cariField(
+
+            properties,
+
+            [
+                "dE",
+                "de",
+                "DE",
+                "D_E",
+                "deltaE"
+            ]
+
+        )
+
+    );
+
+}
+
+
+
+/* =====================================================
+   8. MEMBACA dN
+===================================================== */
+
+function ambilDN(properties) {
+
+    return bacaAngka(
+
+        cariField(
+
+            properties,
+
+            [
+                "dN",
+                "dn",
+                "DN",
+                "D_N",
+                "deltaN"
+            ]
+
+        )
+
+    );
+
+}
+
+
+
+/* =====================================================
+   9. MEMBACA dU
+===================================================== */
+
+function ambilDU(properties) {
+
+    return bacaAngka(
+
+        cariField(
+
+            properties,
+
+            [
+                "dU",
+                "du",
+                "DU",
+                "D_U",
+                "deltaU"
+            ]
+
+        )
+
+    );
+
+}
+
+
+
+/* =====================================================
+   10. WARNA TITIK
+===================================================== */
+
+function tentukanWarna(
+    dE,
+    dN,
+    dU
+) {
+
+
+    /*
+       KUNING:
+
+       dE = 0
+       dN = 0
+       dU = 0
+    */
+
+    if (
+        dE === 0 &&
+        dN === 0 &&
+        dU === 0
+    ) {
+
+        return "#ffd400";
+
+    }
+
+
+    /*
+       MERAH:
+
+       salah satu nilai
+       tidak sama dengan 0
+    */
+
+    return "#e31a1c";
+
+}
+
+
+
+/* =====================================================
+   11. ICON TITIK
+===================================================== */
+
+function buatIcon(
+    warna
+) {
+
+    return L.divIcon({
+
+        className: "",
+
+        html:
+
+        `
+
+        <div
+            style="
+                width:18px;
+                height:18px;
+
+                background:${warna};
+
+                border:
+                    2px solid white;
+
+                border-radius:50%;
+
+                box-shadow:
+                    0 1px 5px
+                    rgba(0,0,0,0.50);
+            "
+        ></div>
+
+        `,
+
+        iconSize:
+            [18,18],
+
+        iconAnchor:
+            [9,9],
+
+        popupAnchor:
+            [0,-8]
+
+    });
+
+}
+
+
+
+
+
+/* =====================================================
+   FOTO BM1
+===================================================== */
+
+function dokumentasiBM1() {
+
+
+    return `
+
+        <div class="photo-title">
+
+            📷 Dokumentasi BM1
+
+        </div>
+
+
+        <div class="photo-grid">
+
+            <img
+                src="dokumentasi/BM1_b.jpeg"
+                alt="Dokumentasi BM1"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM1_s.jpeg"
+                alt="Dokumentasi BM1"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM1_t.jpeg"
+                alt="Dokumentasi BM1"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM1_u.jpeg"
+                alt="Dokumentasi BM1"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+        </div>
+
+
+    `;
+
+}
+
+
+/* =====================================================
+   FOTO BM2
+===================================================== */
+
+function dokumentasiBM2() {
+
+
+    return `
+
+        <div class="photo-title">
+
+            📷 Dokumentasi BM2
+
+        </div>
+
+
+        <div class="photo-grid">
+
+            <img
+                src="dokumentasi/BM2_b.jpeg"
+                alt="Dokumentasi BM2"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM2_multipad.jpeg"
+                alt="Dokumentasi BM2"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM2_s.jpeg"
+                alt="Dokumentasi BM2"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM2_t.jpeg"
+                alt="Dokumentasi BM2"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM2_u.jpeg"
+                alt="Dokumentasi BM2"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+        </div>
+
+
+    `;
+
+}
+
+
+/* =====================================================
+   FOTO BM4
+===================================================== */
+
+function dokumentasiBM4() {
+
+
+    return `
+
+        <div class="photo-title">
+
+            📷 Dokumentasi BM4
+
+        </div>
+
+
+        <div class="photo-grid">
+
+            <img
+                src="dokumentasi/BM4_b.jpeg"
+                alt="Dokumentasi BM4"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM4_s.jpeg"
+                alt="Dokumentasi BM4"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM4_t.jpeg"
+                alt="Dokumentasi BM4"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+            <img
+                src="dokumentasi/BM4_u.jpeg"
+                alt="Dokumentasi BM4"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+        </div>
+
+
+    `;
+
+}
+
+/* =====================================================
+   12. FOTO BM3
+===================================================== */
+
+function dokumentasiBM3() {
+
+
+    return `
+
+        <div class="photo-title">
+
+            📷 Dokumentasi BM3
+
+        </div>
+
+
+        <div class="photo-grid">
+
+
+            <img
+                src="dokumentasi/BM3_b.jpeg"
+                alt="Dokumentasi BM3"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM3_multipad.jpeg"
+                alt="Dokumentasi BM3"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM3_s.jpeg"
+                alt="Dokumentasi BM3"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM3_t.jpeg"
+                alt="Dokumentasi BM3"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM3_u.jpeg"
+                alt="Dokumentasi BM3"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+        </div>
+
+    `;
+
+}
+
+
+
+/* =====================================================
+   13. FOTO BM5
+===================================================== */
+
+function dokumentasiBM5() {
+
+
+    return `
+
+        <div class="photo-title">
+
+            📷 Dokumentasi BM5
+
+        </div>
+
+
+        <div class="photo-grid">
+
+
+            <img
+                src="dokumentasi/BM5_b.jpeg"
+                alt="Dokumentasi BM5"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM5_multipad.jpeg"
+                alt="Dokumentasi BM5"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM5_s.jpeg"
+                alt="Dokumentasi BM5"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM5_t.jpeg"
+                alt="Dokumentasi BM5"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+            <img
+                src="dokumentasi/BM5_u.jpeg"
+                alt="Dokumentasi BM5"
+                onclick="
+                    window.open(
+                        this.src,
+                        '_blank'
+                    )
+                "
+            >
+
+
+        </div>
+
+    `;
+
+}
+
+
+
+/* =====================================================
+   14. DOKUMENTASI SESUAI ID
+===================================================== */
+
+function tampilkanDokumentasi(
+    id
+) {
+
+
+    if (
+        id === "BM1"
+    ) {
+
+        return dokumentasiBM1();
+
+    }
+
+
+    if (
+        id === "BM2"
+    ) {
+
+        return dokumentasiBM2();
+
+    }
+
+
+    if (
+        id === "BM3"
+    ) {
+
+        return dokumentasiBM3();
+
+    }
+
+
+    if (
+        id === "BM4"
+    ) {
+
+        return dokumentasiBM4();
+
+    }
+
+
+    if (
+        id === "BM5"
+    ) {
+
+        return dokumentasiBM5();
+
+    }
+
+
+    return "";
+
+}
+
+
+
+/* =====================================================
+   15. MEMBUAT POPUP
+===================================================== */
+
+function buatPopup(
+    id,
+    latitude,
+    longitude,
+    dE,
+    dN,
+    dU
+) {
+
+
+    return `
+
+        <div class="popup">
+
+
+            <div class="popup-header">
+
+
+                <div class="popup-title">
+
+                    Data Land Subsidence ${id}
+
+                </div>
+
+
+                <div class="popup-location">
+
+                    Desa Sidodadi
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- IDENTITAS -->
+
+            <div class="section-title">
+
+                IDENTITAS TITIK
+
+            </div>
+
+
+            <div class="data-row">
+
+                <span class="data-label">
+
+                    ID Titik
+
+                </span>
+
+
+                <span class="data-value">
+
+                    ${id}
+
+                </span>
+
+            </div>
+
+
+
+            <!-- KOORDINAT -->
+
+            <div class="section-title">
+
+                KOORDINAT
+
+            </div>
+
+
+            <div class="data-row">
+
+                <span class="data-label">
+
+                    Latitude
+
+                </span>
+
+
+                <span class="data-value">
+
+                    ${latitude.toFixed(8)}
+
+                </span>
+
+            </div>
+
+
+            <div class="data-row">
+
+                <span class="data-label">
+
+                    Longitude
+
+                </span>
+
+
+                <span class="data-value">
+
+                    ${longitude.toFixed(8)}
+
+                </span>
+
+            </div>
+
+
+
+            <!-- DATA PERUBAHAN -->
+
+            <div class="section-title">
+
+                DATA dE, dN, dU
+
+            </div>
+
+
+            <div class="data-row">
+
+                <span class="data-label">
+
+                    dE
+
+                </span>
+
+
+                <span class="data-value">
+
+                    ${dE.toFixed(5)}
+
+                </span>
+
+            </div>
+
+
+            <div class="data-row">
+
+                <span class="data-label">
+
+                    dN
+
+                </span>
+
+
+                <span class="data-value">
+
+                    ${dN.toFixed(5)}
+
+                </span>
+
+            </div>
+
+
+            <div class="data-row">
+
+                <span class="data-label">
+
+                    dU
+
+                </span>
+
+
+                <span class="data-value">
+
+                    ${dU.toFixed(5)}
+
+                </span>
+
+            </div>
+
+
+
+            <!-- FOTO -->
+
+            ${tampilkanDokumentasi(id)}
+
+
+        </div>
+
+    `;
+
+}
+
+
+
+/* =====================================================
+   16. MEMBACA DU_WebGIS.json
+===================================================== */
+
+fetch(
+    "DU_WebGIS.json"
+)
+
+
+.then(
+    function(response) {
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                "DU_WebGIS.json tidak ditemukan."
+            );
+
+        }
+
+
+        return response.json();
+
+    }
+)
+
+
+.then(
+    function(data) {
+
+
+        console.log(
+            "DU_WebGIS.json berhasil dibaca:",
+            data
+        );
+
+
+        /* =================================================
+           CEK FORMAT
+        ================================================= */
+
+        if (
+            data.type !==
+            "FeatureCollection"
+        ) {
+
+            throw new Error(
+                "Format DU_WebGIS.json bukan GeoJSON FeatureCollection."
+            );
+
+        }
+
+
+        /* =================================================
+           CEK FEATURE
+        ================================================= */
+
+        if (
+            !Array.isArray(data.features) ||
+            data.features.length === 0
+        ) {
+
+            throw new Error(
+                "DU_WebGIS.json tidak memiliki titik."
+            );
+
+        }
+
+
+
+        /* =================================================
+           LAYER GEOJSON
+        ================================================= */
+
+        const titikLayer =
+            L.geoJSON(
+
+                data,
+
+                {
+
+
+                    /* =====================================
+                       MEMBUAT MARKER
+                    ===================================== */
+
+                    pointToLayer:
+                    function(
+                        feature,
+                        latlng
+                    ) {
+
+
+                        const properties =
+                            feature.properties
+                            || {};
+
+
+                        const dE =
+                            ambilDE(
+                                properties
+                            );
+
+
+                        const dN =
+                            ambilDN(
+                                properties
+                            );
+
+
+                        const dU =
+                            ambilDU(
+                                properties
+                            );
+
+
+                        const warna =
+                            tentukanWarna(
+                                dE,
+                                dN,
+                                dU
+                            );
+
+
+                        return L.marker(
+
+                            latlng,
+
+                            {
+
+                                icon:
+                                    buatIcon(
+                                        warna
+                                    )
+
+                            }
+
+                        );
+
+                    },
+
+
+
+                    /* =====================================
+                       POPUP DAN LABEL
+                    ===================================== */
+
+                    onEachFeature:
+                    function(
+                        feature,
+                        marker
+                    ) {
+
+
+                        const properties =
+                            feature.properties
+                            || {};
+
+
+                        /*
+                           NAMA TITIK
+
+                           Berdasarkan urutan
+                           feature GeoJSON.
+
+                           Feature 1 = BM1
+                           Feature 2 = BM2
+                           Feature 3 = BM3
+                           Feature 4 = BM4
+                           Feature 5 = BM5
+                        */
+
+                        const nomor =
+                            data.features
+                            .indexOf(feature)
+                            + 1;
+
+
+                        const id =
+                            "BM" +
+                            nomor;
+
+
+                        /*
+                           DATA dE
+                        */
+
+                        const dE =
+                            ambilDE(
+                                properties
+                            );
+
+
+                        /*
+                           DATA dN
+                        */
+
+                        const dN =
+                            ambilDN(
+                                properties
+                            );
+
+
+                        /*
+                           DATA dU
+                        */
+
+                        const dU =
+                            ambilDU(
+                                properties
+                            );
+
+
+                        /*
+                           KOORDINAT
+
+                           Diambil langsung
+                           dari posisi marker.
+
+                           TIDAK DIUBAH.
+                        */
+
+                        const posisi =
+                            marker.getLatLng();
+
+
+                        const latitude =
+                            posisi.lat;
+
+
+                        const longitude =
+                            posisi.lng;
+
+
+
+                        /* =================================
+                           POPUP
+                        ================================= */
+
+                        marker.bindPopup(
+
+                            buatPopup(
+
+                                id,
+
+                                latitude,
+
+                                longitude,
+
+                                dE,
+
+                                dN,
+
+                                dU
+
+                            ),
+
+                            {
+
+                                maxWidth:
+                                    360,
+
+                                minWidth:
+                                    270
+
+                            }
+
+                        );
+
+
+
+                        /* =================================
+                           LABEL BM DI PETA
+                        ================================= */
+
+                        marker.bindTooltip(
+
+                            id,
+
+                            {
+
+                                permanent:
+                                    true,
+
+                                direction:
+                                    "right",
+
+                                offset:
+                                    [10, 0],
+
+                                className:
+                                    "bm-label"
+
+                            }
+
+                        );
+
+
+                        /* =================================
+                           DEBUG
+                        ================================= */
+
+                        console.log(
+                            "----------------------"
+                        );
+
+
+                        console.log(
+                            "Titik:",
+                            id
+                        );
+
+
+                        console.log(
+                            "Latitude:",
+                            latitude
+                        );
+
+
+                        console.log(
+                            "Longitude:",
+                            longitude
+                        );
+
+
+                        console.log(
+                            "dE:",
+                            dE
+                        );
+
+
+                        console.log(
+                            "dN:",
+                            dN
+                        );
+
+
+                        console.log(
+                            "dU:",
+                            dU
+                        );
+
+                    }
+
+                }
+
+            ).addTo(map);
+
+
+
+        /* =================================================
+           ZOOM OTOMATIS KE SEMUA TITIK
+        ================================================= */
+
+        const bounds =
+            titikLayer.getBounds();
+
+
+        if (
+            bounds.isValid()
+        ) {
+
+
+            map.fitBounds(
+
+                bounds,
+
+                {
+
+                    padding:
+                        [60, 60],
+
+                    maxZoom:
+                        17
+
+                }
+
+            );
+
+        }
+
+
+    }
+)
+
+
+.catch(
+    function(error) {
+
+
+        console.error(
+            "ERROR:",
+            error
+        );
+
+
+        document.getElementById(
+            "map"
+        ).innerHTML = `
+
+            <div
+                style="
+                    padding:40px;
+                    text-align:center;
+                    color:#b71c1c;
+                    background:white;
+                    height:100%;
+                "
+            >
+
+                <h3>
+
+                    ⚠️ Data Tidak Dapat Dibaca
+
+                </h3>
+
+
+                <p>
+
+                    ${error.message}
+
+                </p>
+
+
+                <p
+                    style="
+                        color:#666;
+                        font-size:13px;
+                    "
+                >
+
+                    Pastikan:
+
+                    <br><br>
+
+                    1. <b>index.html</b>
+                    dan
+                    <b>DU_WebGIS.json</b>
+                    berada dalam folder yang sama.
+
+                    <br><br>
+
+                    2. Folder
+                    <b>dokumentasi</b>
+                    berada dalam folder yang sama
+                    dengan index.html.
+
+                    <br><br>
+
+                    3. Jalankan menggunakan
+                    <b>Live Server</b>.
+
+                </p>
+
+            </div>
+
+        `;
+
+    }
+);
+
+
+
+/* =====================================================
+   17. SKALA PETA
+===================================================== */
+
+L.control.scale(
+
+    {
+
+        metric: true,
+
+        imperial: false,
+
+        position:
+            "bottomleft"
+
+    }
+
+).addTo(map);
+
+
+</script>
+
+
+</body>
+
+</html>
