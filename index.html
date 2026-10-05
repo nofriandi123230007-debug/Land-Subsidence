@@ -442,7 +442,6 @@
 
         /* =====================================================
            POSISI TOMBOL ZOOM
-           Diletakkan di bawah judul peta
         ====================================================== */
 
         #map .leaflet-top.leaflet-left {
@@ -641,12 +640,229 @@
 
             cursor: pointer;
 
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
+
         }
 
 
         .photo-grid img:hover {
 
-            opacity: 0.8;
+            opacity: 0.85;
+
+            transform: scale(1.02);
+
+        }
+
+
+        /* =====================================================
+           GALERI / LIGHTBOX
+        ====================================================== */
+
+        .photo-lightbox {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 99999;
+
+            background:
+                rgba(0,0,0,0.90);
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                60px 80px;
+
+        }
+
+
+        .photo-lightbox.show {
+
+            display: flex;
+
+        }
+
+
+        .lightbox-content {
+
+            position: relative;
+
+            width:
+                min(100%, 1000px);
+
+            height:
+                min(100%, 760px);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+        .lightbox-image {
+
+            max-width: 100%;
+
+            max-height: 100%;
+
+            object-fit: contain;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 8px 35px
+                rgba(0,0,0,0.50);
+
+        }
+
+
+        /* =====================================================
+           TOMBOL LIGHTBOX
+        ====================================================== */
+
+        .lightbox-close,
+        .lightbox-prev,
+        .lightbox-next {
+
+            position: fixed;
+
+            border: none;
+
+            color: white;
+
+            background:
+                rgba(0,0,0,0.55);
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 100001;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+
+        }
+
+
+        .lightbox-close:hover,
+        .lightbox-prev:hover,
+        .lightbox-next:hover {
+
+            background:
+                rgba(33,150,166,0.95);
+
+        }
+
+
+        /* TOMBOL CLOSE */
+
+        .lightbox-close {
+
+            top: 18px;
+
+            right: 22px;
+
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 50%;
+
+            font-size: 26px;
+
+        }
+
+
+        /* TOMBOL SEBELUMNYA */
+
+        .lightbox-prev {
+
+            top: 50%;
+
+            left: 18px;
+
+            width: 52px;
+
+            height: 70px;
+
+            border-radius: 10px;
+
+            font-size: 32px;
+
+            transform:
+                translateY(-50%);
+
+        }
+
+
+        /* TOMBOL BERIKUTNYA */
+
+        .lightbox-next {
+
+            top: 50%;
+
+            right: 18px;
+
+            width: 52px;
+
+            height: 70px;
+
+            border-radius: 10px;
+
+            font-size: 32px;
+
+            transform:
+                translateY(-50%);
+
+        }
+
+
+        /* =====================================================
+           NOMOR FOTO
+        ====================================================== */
+
+        .lightbox-caption {
+
+            position: fixed;
+
+            left: 50%;
+
+            bottom: 18px;
+
+            transform:
+                translateX(-50%);
+
+            color: white;
+
+            background:
+                rgba(0,0,0,0.65);
+
+            padding:
+                8px 15px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            z-index: 100001;
+
+            white-space: nowrap;
 
         }
 
@@ -731,6 +947,64 @@
 
             }
 
+
+            /* LIGHTBOX MOBILE */
+
+            .photo-lightbox {
+
+                padding:
+                    55px 45px;
+
+            }
+
+
+            .lightbox-prev,
+            .lightbox-next {
+
+                width: 40px;
+
+                height: 55px;
+
+                font-size: 27px;
+
+            }
+
+
+            .lightbox-prev {
+
+                left: 7px;
+
+            }
+
+
+            .lightbox-next {
+
+                right: 7px;
+
+            }
+
+
+            .lightbox-close {
+
+                top: 10px;
+
+                right: 10px;
+
+            }
+
+
+            .lightbox-caption {
+
+                bottom: 10px;
+
+                max-width: 80%;
+
+                overflow: hidden;
+
+                text-overflow: ellipsis;
+
+            }
+
         }
 
     </style>
@@ -742,17 +1016,87 @@
 
 
 <!-- =====================================================
+     GALERI DOKUMENTASI / LIGHTBOX
+====================================================== -->
+
+<div
+    id="photoLightbox"
+    class="photo-lightbox"
+    onclick="tutupDokumentasi(event)"
+>
+
+    <!-- TOMBOL CLOSE -->
+
+    <button
+        class="lightbox-close"
+        type="button"
+        onclick="tutupDokumentasi()"
+        aria-label="Tutup"
+    >
+        ×
+    </button>
+
+
+    <!-- TOMBOL SEBELUMNYA -->
+
+    <button
+        class="lightbox-prev"
+        type="button"
+        onclick="fotoSebelumnya(event)"
+        aria-label="Foto sebelumnya"
+    >
+        ❮
+    </button>
+
+
+    <!-- FOTO BESAR -->
+
+    <div class="lightbox-content">
+
+        <img
+            id="lightboxImage"
+            class="lightbox-image"
+            src=""
+            alt="Dokumentasi"
+        >
+
+    </div>
+
+
+    <!-- TOMBOL BERIKUTNYA -->
+
+    <button
+        class="lightbox-next"
+        type="button"
+        onclick="fotoBerikutnya(event)"
+        aria-label="Foto berikutnya"
+    >
+        ❯
+    </button>
+
+
+    <!-- NOMOR FOTO -->
+
+    <div
+        id="lightboxCaption"
+        class="lightbox-caption"
+    ></div>
+
+</div>
+
+
+
+<!-- =====================================================
      HEADER
-===================================================== -->
+====================================================== -->
 
 <div class="header">
-
 
     <div>
 
         <div class="header-title">
 
-            WEBGIS LAND SUBSIDENCE
+            WEBGIS POTENSI LAND SUBSIDENCE
 
         </div>
 
@@ -778,7 +1122,6 @@
 
     </div>
 
-
 </div>
 
 
@@ -788,7 +1131,7 @@
 
 <!-- =====================================================
      SIDEBAR
-===================================================== -->
+====================================================== -->
 
 <div class="sidebar">
 
@@ -839,14 +1182,13 @@
 
             <div class="legend-dot dot-red"></div>
 
-
             <div>
 
-                <b>Merah</b><br>
+                <b>Titik Merah</b><br>
 
-                
-                <b>Telah dilakukan analisis Land subsidence</b>
-                
+                <b>
+                    Telah dilakukan analisis Land Subsidence
+                </b>
 
             </div>
 
@@ -857,14 +1199,13 @@
 
             <div class="legend-dot dot-yellow"></div>
 
-
             <div>
 
-                <b>Kuning</b><br>
+                <b>Titik Kuning</b><br>
 
-                
-                <b>Belum dilakukan analisis Land Subsidence</b>
-                
+                <b>
+                    Belum dilakukan analisis Land Subsidence
+                </b>
 
             </div>
 
@@ -954,7 +1295,8 @@
 
     <div class="footer">
 
-        WEBGIS LAND SUBSIDENCE
+        WEBGIS POTENSI LAND SUBSIDENCE
+
         <br>
 
         DESA SIDODADI — KELOMPOK 6
@@ -968,7 +1310,7 @@
 
 <!-- =====================================================
      PETA
-===================================================== -->
+====================================================== -->
 
 <div id="map">
 
@@ -1000,10 +1342,10 @@
 
 <!-- =====================================================
      LEAFLET JS
-===================================================== -->
+====================================================== -->
 
 <script
-src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 </script>
 
 
@@ -1017,6 +1359,7 @@ src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 
 const map =
     L.map("map");
+
 
 
 /* =====================================================
@@ -1089,7 +1432,6 @@ L.control.layers(
 
 function bacaAngka(nilai) {
 
-
     if (
         nilai === null ||
         nilai === undefined ||
@@ -1135,13 +1477,11 @@ function cariField(
     daftarNama
 ) {
 
-
     for (
         let i = 0;
         i < daftarNama.length;
         i++
     ) {
-
 
         const nama =
             daftarNama[i];
@@ -1260,7 +1600,6 @@ function tentukanWarna(
     dU
 ) {
 
-
     /*
        KUNING:
 
@@ -1310,7 +1649,9 @@ function buatIcon(
         `
 
         <div
+
             style="
+
                 width:18px;
                 height:18px;
 
@@ -1324,7 +1665,9 @@ function buatIcon(
                 box-shadow:
                     0 1px 5px
                     rgba(0,0,0,0.50);
+
             "
+
         ></div>
 
         `,
@@ -1344,20 +1687,395 @@ function buatIcon(
 
 
 
+/* =====================================================
+   12. GALERI DOKUMENTASI
+===================================================== */
+
+/*
+   Array foto yang sedang dibuka.
+*/
+
+let daftarFoto = [];
+
+let indeksFoto = 0;
+
+
+
+/*
+   Mengambil semua foto pada
+   dokumentasi BM yang sama.
+*/
+
+function ambilSemuaFoto(element) {
+
+    const grid =
+        element.closest(".photo-grid");
+
+
+    if (!grid) {
+
+        return [];
+
+    }
+
+
+    return Array.from(
+
+        grid.querySelectorAll("img")
+
+    );
+
+}
+
+
+
+/*
+   Membuka foto.
+*/
+
+function bukaDokumentasi(element) {
+
+    daftarFoto =
+        ambilSemuaFoto(element);
+
+
+    if (
+        daftarFoto.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    indeksFoto =
+        daftarFoto.indexOf(element);
+
+
+    if (
+        indeksFoto < 0
+    ) {
+
+        indeksFoto = 0;
+
+    }
+
+
+    tampilkanFoto();
+
+
+    const lightbox =
+        document.getElementById(
+            "photoLightbox"
+        );
+
+
+    lightbox.classList.add(
+        "show"
+    );
+
+
+    /*
+       Supaya halaman utama
+       tidak ikut scroll.
+    */
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+
+/*
+   Menampilkan foto sesuai indeks.
+*/
+
+function tampilkanFoto() {
+
+    if (
+        daftarFoto.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const foto =
+        daftarFoto[indeksFoto];
+
+
+    const image =
+        document.getElementById(
+            "lightboxImage"
+        );
+
+
+    const caption =
+        document.getElementById(
+            "lightboxCaption"
+        );
+
+
+    image.src =
+        foto.src;
+
+
+    image.alt =
+        foto.alt ||
+        "Dokumentasi";
+
+
+    caption.textContent =
+
+        (foto.alt ||
+        "Dokumentasi")
+
+        +
+
+        " — "
+
+        +
+
+        (indeksFoto + 1)
+
+        +
+
+        " / "
+
+        +
+
+        daftarFoto.length;
+
+}
+
+
+
+/*
+   Foto sebelumnya.
+*/
+
+function fotoSebelumnya(event) {
+
+    if (event) {
+
+        event.stopPropagation();
+
+    }
+
+
+    if (
+        daftarFoto.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    indeksFoto--;
+
+
+    /*
+       Jika berada di foto pertama,
+       kembali ke foto terakhir.
+    */
+
+    if (
+        indeksFoto < 0
+    ) {
+
+        indeksFoto =
+            daftarFoto.length - 1;
+
+    }
+
+
+    tampilkanFoto();
+
+}
+
+
+
+/*
+   Foto berikutnya.
+*/
+
+function fotoBerikutnya(event) {
+
+    if (event) {
+
+        event.stopPropagation();
+
+    }
+
+
+    if (
+        daftarFoto.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    indeksFoto++;
+
+
+    /*
+       Jika sudah foto terakhir,
+       kembali ke foto pertama.
+    */
+
+    if (
+        indeksFoto >=
+        daftarFoto.length
+    ) {
+
+        indeksFoto = 0;
+
+    }
+
+
+    tampilkanFoto();
+
+}
+
+
+
+/*
+   Menutup galeri.
+*/
+
+function tutupDokumentasi(event) {
+
+    /*
+       Jika yang diklik bukan background
+       lightbox, jangan ditutup.
+
+       Contoh:
+       - gambar
+       - tombol sebelumnya
+       - tombol berikutnya
+    */
+
+    if (
+        event &&
+        event.target &&
+        event.target.id !==
+            "photoLightbox"
+    ) {
+
+        return;
+
+    }
+
+
+    const lightbox =
+        document.getElementById(
+            "photoLightbox"
+        );
+
+
+    lightbox.classList.remove(
+        "show"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+
+    document.getElementById(
+        "lightboxImage"
+    ).src = "";
+
+
+    daftarFoto = [];
+
+    indeksFoto = 0;
+
+}
+
+
+
+/*
+   Kontrol keyboard.
+
+   ←  = sebelumnya
+   →  = berikutnya
+   ESC = tutup
+*/
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        const lightbox =
+            document.getElementById(
+                "photoLightbox"
+            );
+
+
+        if (
+            !lightbox ||
+            !lightbox.classList.contains(
+                "show"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            event.key ===
+            "ArrowLeft"
+        ) {
+
+            fotoSebelumnya();
+
+        }
+
+
+        if (
+            event.key ===
+            "ArrowRight"
+        ) {
+
+            fotoBerikutnya();
+
+        }
+
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            tutupDokumentasi();
+
+        }
+
+    }
+
+);
+
 
 
 /* =====================================================
-   FOTO BM1
+   13. FOTO BM1
 ===================================================== */
 
 function dokumentasiBM1() {
-
 
     return `
 
         <div class="photo-title">
 
-            📷 Dokumentasi BM1
+            📷 Dokumentasi SDD01
 
         </div>
 
@@ -1366,68 +2084,47 @@ function dokumentasiBM1() {
 
             <img
                 src="dokumentasi/BM1_b.jpeg"
-                alt="Dokumentasi BM1"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD01 - Foto 1"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM1_s.jpeg"
-                alt="Dokumentasi BM1"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD01 - Foto 2"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM1_t.jpeg"
-                alt="Dokumentasi BM1"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD01 - Foto 3"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM1_u.jpeg"
-                alt="Dokumentasi BM1"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD01 - Foto 4"
+                onclick="bukaDokumentasi(this)"
             >
 
         </div>
-
 
     `;
 
 }
 
 
+
 /* =====================================================
-   FOTO BM2
+   14. FOTO BM2
 ===================================================== */
 
 function dokumentasiBM2() {
-
 
     return `
 
         <div class="photo-title">
 
-            📷 Dokumentasi BM2
+            📷 Dokumentasi SDD02
 
         </div>
 
@@ -1436,79 +2133,108 @@ function dokumentasiBM2() {
 
             <img
                 src="dokumentasi/BM2_b.jpeg"
-                alt="Dokumentasi BM2"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD02 - Foto 1"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM2_multipad.jpeg"
-                alt="Dokumentasi BM2"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD02 - Foto 2"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM2_s.jpeg"
-                alt="Dokumentasi BM2"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD02 - Foto 3"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM2_t.jpeg"
-                alt="Dokumentasi BM2"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD02 - Foto 4"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM2_u.jpeg"
-                alt="Dokumentasi BM2"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD02 - Foto 5"
+                onclick="bukaDokumentasi(this)"
             >
 
         </div>
-
 
     `;
 
 }
 
 
+
 /* =====================================================
-   FOTO BM4
+   15. FOTO BM3
 ===================================================== */
 
-function dokumentasiBM4() {
-
+function dokumentasiBM3() {
 
     return `
 
         <div class="photo-title">
 
-            📷 Dokumentasi BM4
+            📷 Dokumentasi PSR01
+
+        </div>
+
+
+        <div class="photo-grid">
+
+            <img
+                src="dokumentasi/BM3_b.jpeg"
+                alt="Dokumentasi PSR01 - Foto 1"
+                onclick="bukaDokumentasi(this)"
+            >
+
+            <img
+                src="dokumentasi/BM3_multipad.jpeg"
+                alt="Dokumentasi PSR01 - Foto 2"
+                onclick="bukaDokumentasi(this)"
+            >
+
+            <img
+                src="dokumentasi/BM3_s.jpeg"
+                alt="Dokumentasi PSR01 - Foto 3"
+                onclick="bukaDokumentasi(this)"
+            >
+
+            <img
+                src="dokumentasi/BM3_t.jpeg"
+                alt="Dokumentasi PSR01 - Foto 4"
+                onclick="bukaDokumentasi(this)"
+            >
+
+            <img
+                src="dokumentasi/BM3_u.jpeg"
+                alt="Dokumentasi PSR01 - Foto 5"
+                onclick="bukaDokumentasi(this)"
+            >
+
+        </div>
+
+    `;
+
+}
+
+
+
+/* =====================================================
+   16. FOTO BM4
+===================================================== */
+
+function dokumentasiBM4() {
+
+    return `
+
+        <div class="photo-title">
+
+            📷 Dokumentasi SDD03
 
         </div>
 
@@ -1517,133 +2243,27 @@ function dokumentasiBM4() {
 
             <img
                 src="dokumentasi/BM4_b.jpeg"
-                alt="Dokumentasi BM4"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD03 - Foto 1"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM4_s.jpeg"
-                alt="Dokumentasi BM4"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD03 - Foto 2"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM4_t.jpeg"
-                alt="Dokumentasi BM4"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD03 - Foto 3"
+                onclick="bukaDokumentasi(this)"
             >
 
             <img
                 src="dokumentasi/BM4_u.jpeg"
-                alt="Dokumentasi BM4"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi SDD03 - Foto 4"
+                onclick="bukaDokumentasi(this)"
             >
-
-        </div>
-
-
-    `;
-
-}
-
-/* =====================================================
-   12. FOTO BM3
-===================================================== */
-
-function dokumentasiBM3() {
-
-
-    return `
-
-        <div class="photo-title">
-
-            📷 Dokumentasi BM3
-
-        </div>
-
-
-        <div class="photo-grid">
-
-
-            <img
-                src="dokumentasi/BM3_b.jpeg"
-                alt="Dokumentasi BM3"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
-            >
-
-
-            <img
-                src="dokumentasi/BM3_multipad.jpeg"
-                alt="Dokumentasi BM3"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
-            >
-
-
-            <img
-                src="dokumentasi/BM3_s.jpeg"
-                alt="Dokumentasi BM3"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
-            >
-
-
-            <img
-                src="dokumentasi/BM3_t.jpeg"
-                alt="Dokumentasi BM3"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
-            >
-
-
-            <img
-                src="dokumentasi/BM3_u.jpeg"
-                alt="Dokumentasi BM3"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
-            >
-
 
         </div>
 
@@ -1654,83 +2274,51 @@ function dokumentasiBM3() {
 
 
 /* =====================================================
-   13. FOTO BM5
+   17. FOTO BM5
 ===================================================== */
 
 function dokumentasiBM5() {
 
-
     return `
 
         <div class="photo-title">
 
-            📷 Dokumentasi BM5
+            📷 Dokumentasi GBG01
 
         </div>
 
 
         <div class="photo-grid">
 
-
             <img
                 src="dokumentasi/BM5_b.jpeg"
-                alt="Dokumentasi BM5"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi GBG01 - Foto 1"
+                onclick="bukaDokumentasi(this)"
             >
-
 
             <img
                 src="dokumentasi/BM5_multipad.jpeg"
-                alt="Dokumentasi BM5"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi GBG01 - Foto 2"
+                onclick="bukaDokumentasi(this)"
             >
-
 
             <img
                 src="dokumentasi/BM5_s.jpeg"
-                alt="Dokumentasi BM5"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi GBG01 - Foto 3"
+                onclick="bukaDokumentasi(this)"
             >
-
 
             <img
                 src="dokumentasi/BM5_t.jpeg"
-                alt="Dokumentasi BM5"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi GBG01 - Foto 4"
+                onclick="bukaDokumentasi(this)"
             >
-
 
             <img
                 src="dokumentasi/BM5_u.jpeg"
-                alt="Dokumentasi BM5"
-                onclick="
-                    window.open(
-                        this.src,
-                        '_blank'
-                    )
-                "
+                alt="Dokumentasi GBG01 - Foto 5"
+                onclick="bukaDokumentasi(this)"
             >
-
 
         </div>
 
@@ -1741,16 +2329,15 @@ function dokumentasiBM5() {
 
 
 /* =====================================================
-   14. DOKUMENTASI SESUAI ID
+   18. DOKUMENTASI SESUAI ID
 ===================================================== */
 
 function tampilkanDokumentasi(
     id
 ) {
 
-
     if (
-        id === "BM1"
+        id === "SDD01"
     ) {
 
         return dokumentasiBM1();
@@ -1759,7 +2346,7 @@ function tampilkanDokumentasi(
 
 
     if (
-        id === "BM2"
+        id === "SDD02"
     ) {
 
         return dokumentasiBM2();
@@ -1768,7 +2355,7 @@ function tampilkanDokumentasi(
 
 
     if (
-        id === "BM3"
+        id === "PSR01"
     ) {
 
         return dokumentasiBM3();
@@ -1777,7 +2364,7 @@ function tampilkanDokumentasi(
 
 
     if (
-        id === "BM4"
+        id === "SDD03"
     ) {
 
         return dokumentasiBM4();
@@ -1786,7 +2373,7 @@ function tampilkanDokumentasi(
 
 
     if (
-        id === "BM5"
+        id === "GBG01"
     ) {
 
         return dokumentasiBM5();
@@ -1801,7 +2388,7 @@ function tampilkanDokumentasi(
 
 
 /* =====================================================
-   15. MEMBUAT POPUP
+   19. MEMBUAT POPUP
 ===================================================== */
 
 function buatPopup(
@@ -1812,7 +2399,6 @@ function buatPopup(
     dN,
     dU
 ) {
-
 
     return `
 
@@ -1992,7 +2578,7 @@ function buatPopup(
 
 
 /* =====================================================
-   16. MEMBACA DU_WebGIS.json
+   20. MEMBACA DU_WebGIS.json
 ===================================================== */
 
 fetch(
@@ -2002,7 +2588,6 @@ fetch(
 
 .then(
     function(response) {
-
 
         if (
             !response.ok
@@ -2023,7 +2608,6 @@ fetch(
 
 .then(
     function(data) {
-
 
         console.log(
             "DU_WebGIS.json berhasil dibaca:",
@@ -2075,7 +2659,6 @@ fetch(
 
                 {
 
-
                     /* =====================================
                        MEMBUAT MARKER
                     ===================================== */
@@ -2085,7 +2668,6 @@ fetch(
                         feature,
                         latlng
                     ) {
-
 
                         const properties =
                             feature.properties
@@ -2136,7 +2718,6 @@ fetch(
                     },
 
 
-
                     /* =====================================
                        POPUP DAN LABEL
                     ===================================== */
@@ -2146,7 +2727,6 @@ fetch(
                         feature,
                         marker
                     ) {
-
 
                         const properties =
                             feature.properties
@@ -2172,14 +2752,18 @@ fetch(
                             + 1;
 
 
+                        const namaTitik = {
+                            1: "SDD01",
+                            2: "SDD02",
+                            3: "PSR01",
+                            4: "SDD03",
+                            5: "GBG01"
+                        };
+
                         const id =
-                            "BM" +
-                            nomor;
+                            namaTitik[nomor] ||
+                            ("BM" + nomor);
 
-
-                        /*
-                           DATA dE
-                        */
 
                         const dE =
                             ambilDE(
@@ -2187,19 +2771,11 @@ fetch(
                             );
 
 
-                        /*
-                           DATA dN
-                        */
-
                         const dN =
                             ambilDN(
                                 properties
                             );
 
-
-                        /*
-                           DATA dU
-                        */
 
                         const dU =
                             ambilDU(
@@ -2209,11 +2785,6 @@ fetch(
 
                         /*
                            KOORDINAT
-
-                           Diambil langsung
-                           dari posisi marker.
-
-                           TIDAK DIUBAH.
                         */
 
                         const posisi =
@@ -2356,7 +2927,6 @@ fetch(
             bounds.isValid()
         ) {
 
-
             map.fitBounds(
 
                 bounds,
@@ -2382,7 +2952,6 @@ fetch(
 
 .catch(
     function(error) {
-
 
         console.error(
             "ERROR:",
@@ -2458,7 +3027,7 @@ fetch(
 
 
 /* =====================================================
-   17. SKALA PETA
+   21. SKALA PETA
 ===================================================== */
 
 L.control.scale(
